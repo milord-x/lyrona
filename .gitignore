@@ -1,10 +1,6 @@
 .venv/
 __pycache__/
 *.pyc
-
-songs/.lyrona_metadata_cache.json
-songs/*/audio.*
-songs/*/lyrics.lrc
-songs/*/words.json
-songs/*/metadata.json
-!songs/.gitkeep
+*.egg-info/
+dist/
+build/

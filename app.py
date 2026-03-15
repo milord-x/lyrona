@@ -17,12 +17,9 @@ except ImportError:
     MutagenFile = None
 
 from display import TerminalKaraokeDisplay, TerminalSongSelector, _RawTerminal
+from paths import DATA_DIR, METADATA_CACHE_PATH, SONGS_DIR, ensure_data_dirs
 from timing import build_payload, build_word_timings, group_words_by_line, parse_lrc_lines
 
-
-BASE_DIR = Path(__file__).resolve().parent
-SONGS_DIR = BASE_DIR / "songs"
-METADATA_CACHE_PATH = SONGS_DIR / ".lyrona_metadata_cache.json"
 SONG_METADATA_FILENAME = "metadata.json"
 CACHE_VERSION = 1
 
@@ -136,7 +133,7 @@ def save_metadata_cache(entries: Dict[str, Any]) -> None:
     }
 
     try:
-        SONGS_DIR.mkdir(parents=True, exist_ok=True)
+        ensure_data_dirs()
         temp_path = METADATA_CACHE_PATH.with_suffix(".tmp")
         with temp_path.open("w", encoding="utf-8") as handle:
             json.dump(payload, handle, ensure_ascii=False, indent=2, sort_keys=True)
@@ -682,6 +679,8 @@ def print_available_songs(songs: List[Song]) -> None:
 def print_help() -> None:
     print("Lyrona")
     print()
+    print(f"Data directory: {DATA_DIR}")
+    print()
     print("Usage:")
     print("  lyrona")
     print("  lyrona <song name>")
@@ -762,6 +761,7 @@ def import_song(
         print("Use another title with `--title`, or add lyrics with `lyrona add-lyrics`.")
         return 1
 
+    ensure_data_dirs()
     target_folder.mkdir(parents=True, exist_ok=False)
     target_audio = target_folder / f"audio{source_audio.suffix.lower()}"
 

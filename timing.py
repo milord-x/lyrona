@@ -7,9 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
 
-
-PROJECT_ROOT = Path(__file__).resolve().parent
-SONGS_DIR = PROJECT_ROOT / "songs"
+from paths import SONGS_DIR
 
 TIMED_LINE_PATTERN = re.compile(r"^\[(\d+):(\d+(?:\.\d+)?)\](.*)$")
 TOKEN_PATTERN = re.compile(r"\S+")

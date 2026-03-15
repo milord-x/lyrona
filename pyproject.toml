@@ -6,14 +6,19 @@ build-backend = "setuptools.build_meta"
 name = "lyrona"
 version = "0.1.0"
 description = "Terminal music player with karaoke typing effect"
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "mutagen",
     "python-vlc",
 ]
 
+[project.urls]
+Homepage = "https://github.com/milord-x/lyrona"
+Repository = "https://github.com/milord-x/lyrona"
+
 [project.scripts]
-lyrona = "app:main"
+lyrona = "lyrona:main"
 
 [tool.setuptools]
-py-modules = ["app", "display", "timing"]
+py-modules = ["app", "display", "lyrona", "paths", "timing"]
