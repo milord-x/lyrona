@@ -23,7 +23,7 @@ lyrona "Washing Machine Heart"
 Or install directly from GitHub after publishing:
 
 ```bash
-pip install "git+https://github.com/<your-username>/lyrona.git"
+pip install "git+https://github.com/milord-x/lyrona.git"
 ```
 
 ## Commands
