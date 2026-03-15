@@ -1,17 +1,35 @@
-# Lyrona
+# <div align="center">Lyrona</div>
 
-Terminal music player with a karaoke typing effect.
+<div align="center">Terminal music player with a karaoke typing effect.</div>
 
-## Install
+<div align="center">
+  A real CLI app, installable from GitHub, with a standalone Linux release build.
+</div>
 
-If you only cloned the repository, the `lyrona` command does not exist yet.
-You need to install Lyrona as a CLI application.
+<br />
 
-### Download a ready binary
+## Overview
 
-If you do not want Python on the target machine, use the standalone Linux build from GitHub Releases.
+Lyrona is for a simple flow:
 
-After downloading the archive:
+1. Install the app.
+2. Import local music files.
+3. Add optional `.lrc` lyrics.
+4. Play everything from the terminal.
+
+Lyrona stores your library in your user data directory, not inside the repository.
+
+## Why Lyrona
+
+- Installable as a normal CLI command: `lyrona`
+- Linux standalone release archive for machines without a Python setup
+- Song library stored in `~/.local/share/lyrona`
+- Supports local audio import with optional timed lyrics
+- Rebuildable word timing cache for karaoke playback
+
+## Fastest Start
+
+If you want the app without managing Python environments, download the Linux release archive from GitHub Releases.
 
 ```bash
 tar -xzf lyrona-linux-x86_64.tar.gz
@@ -19,10 +37,12 @@ cd lyrona-linux-x86_64
 ./lyrona --help
 ```
 
-This build bundles Python, `python-vlc`, `libvlc`, and VLC plugins.
-It is currently set up for Linux releases.
+This build bundles Python, project dependencies, `libvlc`, and VLC plugins.
+It still needs a working Linux audio stack on the target machine.
 
-### Install as an app from GitHub
+## Install From GitHub
+
+### Option 1: Install as a CLI app
 
 Recommended with `uv`:
 
@@ -42,71 +62,54 @@ Fallback with plain `pip`:
 python3 -m pip install --user "git+https://github.com/milord-x/lyrona.git"
 ```
 
-All of these install the `lyrona` launcher into your user environment, so it is available from any folder.
-Usually that means `~/.local/bin/lyrona`.
-
-If `lyrona` is still not found, add `~/.local/bin` to your `PATH`.
-
-### Install from a local clone
-
-After cloning the repository, install it as an app with:
+After that, the command should be available globally:
 
 ```bash
+lyrona --help
+```
+
+If the command is not found, add `~/.local/bin` to your `PATH`.
+
+### Option 2: Clone the repository first
+
+```bash
+git clone https://github.com/milord-x/lyrona.git
 cd lyrona
 ./install.sh
 ```
 
-Or manually:
+### For source-based installs
+
+If you install from source with `uv`, `pipx`, or `pip`, the system should have VLC available.
+
+Arch Linux:
 
 ```bash
-uv tool install --from . lyrona
+sudo pacman -S vlc
 ```
 
-### Development install
-
-If you want to work on the project itself, use a virtual environment:
+Ubuntu or Debian:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .
+sudo apt install vlc
 ```
 
-Then run the command inside the activated environment:
+## First Run
 
 ```bash
-lyrona
-lyrona "Washing Machine Heart"
+lyrona list
 ```
 
-## Build Standalone Release
-
-To build the Linux standalone archive locally:
+If your library is empty, import a track:
 
 ```bash
-python -m pip install ".[build]"
-python scripts/build_standalone.py
+lyrona import "/path/to/song.mp3"
 ```
 
-The builder expects a local VLC runtime to exist under `/usr/lib/...`.
-It outputs a release archive in `dist/`, for example:
+Or import with lyrics in one step:
 
 ```bash
-dist/lyrona-linux-x86_64.tar.gz
-```
-
-## GitHub Releases
-
-This repository includes a GitHub Actions workflow that builds a Linux standalone archive.
-
-- `workflow_dispatch`: manual build from Actions tab
-- `push` tag `v*`: build and upload the archive to GitHub Releases
-
-Example:
-
-```bash
-git tag v0.1.1
-git push origin v0.1.1
+lyrona import "/path/to/song.mp3" --lyrics "/path/to/song.lrc"
 ```
 
 ## Commands
@@ -123,48 +126,64 @@ lyrona retime "Memory Reboot"
 lyrona rebuild-cache
 ```
 
-## Quick Workflow
+## Add Music
 
-### Add a track fast
+Lyrona imports local files.
+It does not stream directly from a GitHub URL.
 
-Use a local audio file that you already have the right to use:
-
-```bash
-lyrona import "/path/to/song.mp3"
-```
-
-If the audio file has bad or missing tags, set title and artist explicitly:
+### Import music already on your machine
 
 ```bash
-lyrona import "/path/to/song.mp3" --title "Memory Reboot" --artist "VØJ"
+lyrona import "/music/Memory Reboot.mp3"
 ```
 
-### Add lyrics fast
+### Import music that lives in another GitHub repository
 
-If you already have a timed `.lrc` file:
+1. Download or clone the repository that contains the audio files.
+2. Point `lyrona import` at the downloaded local file paths.
+
+Example:
+
+```bash
+git clone https://github.com/your-name/your-music-repo.git
+lyrona import "./your-music-repo/Memory Reboot/audio.mp3" --lyrics "./your-music-repo/Memory Reboot/lyrics.lrc"
+```
+
+If you downloaded files manually from GitHub in the browser, use the paths of those downloaded files:
+
+```bash
+lyrona import "$HOME/Downloads/song.mp3" --lyrics "$HOME/Downloads/song.lrc"
+```
+
+Only import music and lyrics that you are legally allowed to use.
+
+## Lyrics Workflow
+
+If the audio is already imported:
 
 ```bash
 lyrona add-lyrics "Memory Reboot" "/path/to/song.lrc"
 ```
 
-Or do it in one step while importing:
-
-```bash
-lyrona import "/path/to/song.mp3" --lyrics "/path/to/song.lrc"
-```
-
-Lyrona will generate `words.json` automatically. If you later edit the `.lrc`, rebuild timings with:
+If you edited the `.lrc` file and want to rebuild timings:
 
 ```bash
 lyrona retime "Memory Reboot"
 ```
 
-## Song Folder Layout
+If you want to refresh the metadata cache:
 
-Each song lives in its own folder inside `songs/`:
+```bash
+lyrona rebuild-cache
+```
+
+## Library Layout
+
+By default Lyrona stores data here:
 
 ```text
 ~/.local/share/lyrona/
+  .lyrona_metadata_cache.json
   songs/
     Memory Reboot/
       audio.mp3
@@ -173,14 +192,10 @@ Each song lives in its own folder inside `songs/`:
       metadata.json
 ```
 
-`lyrics.lrc` and `words.json` are optional. `metadata.json` is used only when you want to override missing or bad title/artist tags.
-
-## Data Directory
-
-By default Lyrona stores songs and cache files in:
+You can override the location:
 
 ```bash
-~/.local/share/lyrona
+export LYRONA_HOME="$HOME/Music/lyrona"
 ```
 
 If `XDG_DATA_HOME` is set, Lyrona uses:
@@ -189,13 +204,52 @@ If `XDG_DATA_HOME` is set, Lyrona uses:
 $XDG_DATA_HOME/lyrona
 ```
 
-You can fully override the location with:
+## Standalone Release Build
+
+To build the Linux standalone archive locally:
 
 ```bash
-export LYRONA_HOME="$HOME/Music/lyrona"
+python -m pip install ".[build]"
+python scripts/build_standalone.py
 ```
 
-## GitHub Notes
+Output:
 
-- Keep the code in Git, and keep your personal music library in your user data directory.
-- If you want demo content in GitHub, add only music and lyrics that you are allowed to redistribute.
+```bash
+dist/lyrona-linux-x86_64.tar.gz
+```
+
+## GitHub Release Flow
+
+This repository includes a GitHub Actions workflow that can build a standalone Linux archive.
+
+- `workflow_dispatch` builds the archive manually from the Actions tab
+- pushing a tag matching `v*` builds and publishes the release asset
+
+Example:
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
+```
+
+## Development
+
+If you want to work on the project itself:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+## Status
+
+Current state:
+
+- installable as `lyrona` from GitHub
+- standalone Linux release build is configured
+- user library is outside the repository
+- release workflow is ready for GitHub Actions
+
+Windows and macOS release packaging are not set up yet.
